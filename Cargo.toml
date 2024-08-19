@@ -1,0 +1,9 @@
+[package]
+name = "Raytracing"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = "0.29.0"
+nalgebra-glm = "0.9.0"
+minifb = "0.20"
