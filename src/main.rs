@@ -18,10 +18,10 @@ fn main() {
     let height = 600;
     let mut framebuffer = Framebuffer::new(width, height);
 
-    // Crear la cámara
+    // Cambiar la posición de la cámara
     let camera = Camera::new(
-        Vec3::new(0.0, 0.0, 5.0),    // Posición de la cámara
-        Vec3::new(0.0, 0.0, 0.0),    // Punto de enfoque (centro)
+        Vec3::new(2.0, 2.0, 5.0),    // Nueva posición de la cámara (eye)
+        Vec3::new(0.0, 0.0, 0.0),    // Punto de enfoque (center)
         Vec3::new(0.0, 1.0, 0.0),    // Vector "arriba"
     );
 
