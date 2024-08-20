@@ -30,10 +30,29 @@ impl Camera {
     }
 
     // Método para mover la cámara alrededor del centro en órbita
-    pub fn orbit(&mut self, angle: f32, distance: f32) {
-        let direction = self.view_direction();
-        let right = direction.cross(&self.up).normalize();
-        let new_eye = self.center - direction * distance + right * angle.sin();
+    pub fn orbit(&mut self, delta_yaw: f32, delta_pitch: f32) {
+        // Calcular el vector desde el centro al ojo (vector de radio) y medir la distancia
+        let radius_vector = self.eye - self.center;
+        let radius = radius_vector.magnitude();
+
+        // Calcular yaw actual (rotación alrededor del eje Y)
+        let current_yaw = radius_vector.z.atan2(radius_vector.x);
+
+        // Calcular pitch actual (rotación alrededor del eje X)
+        let radius_xz = (radius_vector.x * radius_vector.x + radius_vector.z * radius_vector.z).sqrt();
+        let current_pitch = (-radius_vector.y).atan2(radius_xz);
+
+        // Aplicar las rotaciones delta
+        let new_yaw = (current_yaw + delta_yaw) % (2.0 * std::f32::consts::PI);
+        let new_pitch = (current_pitch + delta_pitch).clamp(-std::f32::consts::PI / 2.0 + 0.1, std::f32::consts::PI / 2.0 - 0.1);
+
+        // Calcular la nueva posición del ojo
+        let new_eye = self.center + Vec3::new(
+            radius * new_yaw.cos() * new_pitch.cos(),
+            -radius * new_pitch.sin(),
+            radius * new_yaw.sin() * new_pitch.cos()
+        );
+
         self.eye = new_eye;
     }
 
