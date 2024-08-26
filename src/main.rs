@@ -3,27 +3,42 @@ mod color;
 mod framebuffer;
 mod sphere;
 mod ray_intersect;
-mod raytracer; // Importa el módulo raytracer
+mod raytracer;
 
 use crate::camera::Camera;
 use crate::color::Color;
 use crate::framebuffer::Framebuffer;
 use crate::sphere::Sphere;
-use crate::ray_intersect::Material; // Importa la estructura Material
-use crate::raytracer::cast_ray; // Importa la función cast_ray
+use crate::ray_intersect::Material;
+use crate::raytracer::cast_ray;
 use nalgebra_glm::Vec3;
+use minifb::{Key, Window, WindowOptions};
 
 fn main() {
     let width = 800;
     let height = 600;
     let mut framebuffer = Framebuffer::new(width, height);
 
+    // Crear la ventana con miniFB
+    let mut window = Window::new(
+        "Raytracing - Esc para salir",
+        width,
+        height,
+        WindowOptions::default(),
+    )
+    .unwrap_or_else(|e| {
+        panic!("{}", e);
+    });
+
     // Cambiar la posición de la cámara
-    let camera = Camera::new(
+    let mut camera = Camera::new(
         Vec3::new(2.0, 2.0, 5.0),    // Nueva posición de la cámara (eye)
         Vec3::new(0.0, 0.0, 0.0),    // Punto de enfoque (center)
         Vec3::new(0.0, 1.0, 0.0),    // Vector "arriba"
     );
+
+    // Sensibilidad de la cámara (factor de ajuste)
+    let sensitivity = 10.5; // Aumenta o disminuye este valor para ajustar la sensibilidad
 
     // Colores de los materiales
     let black_material = Material {
@@ -34,9 +49,6 @@ fn main() {
     };
     let orange_material = Material {
         diffuse: Color::new(255, 165, 0),
-    };
-    let _grey_material = Material {
-        diffuse: Color::new(169, 169, 169),
     };
 
     // Crear esferas para el pingüino
@@ -58,77 +70,48 @@ fn main() {
         material: black_material,
     };
 
-    let left_eye = Sphere {
-        center: Vec3::new(-0.2, 0.5, -2.5),
-        radius: 0.1,
-        material: white_material,
-    };
+    let objects = vec![body, belly, head];
 
-    let right_eye = Sphere {
-        center: Vec3::new(0.2, 0.5, -2.5),
-        radius: 0.1,
-        material: white_material,
-    };
-
-    let left_pupil = Sphere {
-        center: Vec3::new(-0.2, 0.5, -2.4),
-        radius: 0.05,
-        material: black_material,
-    };
-
-    let right_pupil = Sphere {
-        center: Vec3::new(0.2, 0.5, -2.4),
-        radius: 0.05,
-        material: black_material,
-    };
-
-    let beak = Sphere {
-        center: Vec3::new(0.0, 0.3, -2.4),
-        radius: 0.08,
-        material: orange_material,
-    };
-
-    let left_wing = Sphere {
-        center: Vec3::new(-0.6, -0.4, -3.2),
-        radius: 0.4,
-        material: black_material,
-    };
-
-    let right_wing = Sphere {
-        center: Vec3::new(0.6, -0.4, -3.2),
-        radius: 0.4,
-        material: black_material,
-    };
-
-    // Agregar las esferas a la lista de objetos
-    let objects = vec![
-        body, belly, head, left_eye, right_eye, left_pupil, right_pupil,
-        beak, left_wing, right_wing,
-    ];
-
-    // Recorrer cada píxel en el framebuffer
-    for y in 0..height {
-        for x in 0..width {
-            // Convertir las coordenadas del píxel a coordenadas de pantalla
-            let screen_x = (2.0 * x as f32) / width as f32 - 1.0;
-            let screen_y = -(2.0 * y as f32) / height as f32 + 1.0;
-            let aspect_ratio = width as f32 / height as f32;
-            let screen_x = screen_x * aspect_ratio;
-
-            // Direccion del rayo desde la cámara a través del píxel
-            let ray_direction = Vec3::new(screen_x, screen_y, -1.0).normalize();
-
-            // Cambiar la base del rayo
-            let transformed_ray_direction = camera.basis_change(&ray_direction);
-
-            // Obtener el color del objeto más cercano
-            let color = cast_ray(&camera.eye, &transformed_ray_direction, &objects);
-
-            // Dibujar el píxel en el framebuffer
-            framebuffer.point(x as isize, y as isize, color);
+    // Bucle principal
+    while window.is_open() && !window.is_key_down(Key::Escape) {
+        // Procesar entrada del teclado para mover la cámara
+        if window.is_key_down(Key::W) {
+            camera.move_camera(Vec3::new(0.0, 0.0, -0.1) * sensitivity);
+            println!("Tecla W presionada. Nueva posición de la cámara: {:?}", camera.eye);
         }
-    }
+        if window.is_key_down(Key::S) {
+            camera.move_camera(Vec3::new(0.0, 0.0, 0.1) * sensitivity);
+            println!("Tecla S presionada. Nueva posición de la cámara: {:?}", camera.eye);
+        }
+        if window.is_key_down(Key::A) {
+            camera.move_camera(Vec3::new(-0.1, 0.0, 0.0) * sensitivity);
+            println!("Tecla A presionada. Nueva posición de la cámara: {:?}", camera.eye);
+        }
+        if window.is_key_down(Key::D) {
+            camera.move_camera(Vec3::new(0.1, 0.0, 0.0) * sensitivity);
+            println!("Tecla D presionada. Nueva posición de la cámara: {:?}", camera.eye);
+        }
 
-    // Renderizar la ventana
-    framebuffer.render_window();
+        // Recorrer cada píxel en el framebuffer
+        for y in 0..height {
+            for x in 0..width {
+                let screen_x = (2.0 * x as f32) / width as f32 - 1.0;
+                let screen_y = -(2.0 * y as f32) / height as f32 + 1.0;
+                let aspect_ratio = width as f32 / height as f32;
+                let screen_x = screen_x * aspect_ratio;
+
+                let ray_direction = Vec3::new(screen_x, screen_y, -1.0).normalize();
+                let transformed_ray_direction = camera.basis_change(&ray_direction);
+
+                let color = cast_ray(&camera.eye, &transformed_ray_direction, &objects);
+                framebuffer.point(x as isize, y as isize, color);
+            }
+        }
+
+        // Renderizar la ventana
+        window.update_with_buffer(&framebuffer.buffer, width, height).unwrap();
+
+        // Imprimir la posición actual de la cámara en cada iteración del bucle
+        println!("Posición actual de la cámara: {:?}", camera.eye);
+    }
 }

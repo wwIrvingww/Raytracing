@@ -4,7 +4,7 @@ use minifb::{Key, Window, WindowOptions};
 pub struct Framebuffer {
     width: usize,
     height: usize,
-    buffer: Vec<u32>, // Cambia el buffer a u32 para adaptarse a minifb
+    pub buffer: Vec<u32>, // Cambia el buffer a u32 para adaptarse a minifb
 }
 
 impl Framebuffer {
@@ -13,6 +13,14 @@ impl Framebuffer {
             width,
             height,
             buffer: vec![0; width * height], // Inicializar con color negro
+        }
+    }
+
+    // Método para establecer el color de fondo de todo el framebuffer
+    pub fn clear(&mut self, color: Color) {
+        let color_u32 = (255 << 24) | ((color.r as u32) << 16) | ((color.g as u32) << 8) | (color.b as u32);
+        for pixel in self.buffer.iter_mut() {
+            *pixel = color_u32;
         }
     }
 
