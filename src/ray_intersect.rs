@@ -8,15 +8,20 @@ pub struct Material {
 
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
+
 pub struct Intersect {
+    pub point: Vec3,       // El punto de impacto
+    pub normal: Vec3,      // La normal en el punto de impacto
     pub distance: f32,
     pub is_intersecting: bool,
     pub material: Material,
 }
 
 impl Intersect {
-    pub fn new(distance: f32, material: Material) -> Self {
+    pub fn new(point: Vec3, normal: Vec3, distance: f32, material: Material) -> Self {
         Intersect {
+            point,
+            normal,
             distance,
             is_intersecting: true,
             material,
@@ -25,10 +30,12 @@ impl Intersect {
 
     pub fn empty() -> Self {
         Intersect {
+            point: Vec3::zeros(),
+            normal: Vec3::zeros(),
             distance: 0.0,
             is_intersecting: false,
             material: Material {
-                diffuse: Color::new(0, 0, 0), // Color negro por defecto para no intersección
+            diffuse: Color::new(0, 0, 0), // Color negro por defecto para no intersección
             },
         }
     }

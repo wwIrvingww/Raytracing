@@ -18,7 +18,12 @@ impl RayIntersect for Sphere {
 
         if discriminant > 0.0 {
             let distance = (-b - discriminant.sqrt()) / (2.0 * a);
-            return Intersect::new(distance, self.material);
+            if distance > 0.0 {
+                let point = ray_origin + ray_direction * distance; // Calculamos el punto de impacto
+                let normal = (point - self.center).normalize();    // Calculamos la normal en el punto de impacto
+
+                return Intersect::new(point, normal, distance, self.material);
+            }
         }
 
         Intersect::empty()
