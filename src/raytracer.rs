@@ -1,9 +1,10 @@
-use nalgebra_glm::Vec3;
+use nalgebra_glm::{Vec3, dot};
 use crate::color::Color;
 use crate::ray_intersect::{Intersect, RayIntersect};
 use crate::sphere::Sphere;
+use crate::light::Light;
 
-pub fn cast_ray(ray_origin: &Vec3, ray_direction: &Vec3, objects: &[Sphere]) -> Color {
+pub fn cast_ray(ray_origin: &Vec3, ray_direction: &Vec3, objects: &[Sphere], light: &Light) -> Color {
     let mut intersect = Intersect::empty();
     let mut zbuffer = f32::INFINITY; // Distancia infinita al inicio
 
@@ -20,7 +21,14 @@ pub fn cast_ray(ray_origin: &Vec3, ray_direction: &Vec3, objects: &[Sphere]) -> 
         return Color::new(135, 206, 235); // Color de fondo (azul claro del cielo)
     }
 
-    let diffuse = intersect.material.diffuse;
+    // Calcular la dirección de la luz
+    let light_dir = (light.position - intersect.point).normalize();
+
+    // Calcular el factor de difusión
+    let diffuse_intensity = dot(&light_dir, &intersect.normal).max(0.0) * light.intensity;
+
+    // Modificar el color basado en la luz
+    let diffuse = intersect.material.diffuse * diffuse_intensity;
 
     diffuse
 }

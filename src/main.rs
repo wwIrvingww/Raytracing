@@ -4,6 +4,7 @@ mod framebuffer;
 mod sphere;
 mod ray_intersect;
 mod raytracer;
+mod light;  // Asegúrate de importar el módulo light
 
 use crate::camera::Camera;
 use crate::color::Color;
@@ -11,6 +12,7 @@ use crate::framebuffer::Framebuffer;
 use crate::sphere::Sphere;
 use crate::ray_intersect::Material;
 use crate::raytracer::cast_ray;
+use crate::light::Light;  // Asegúrate de importar Light
 use nalgebra_glm::Vec3;
 use minifb::{Key, Window, WindowOptions};
 
@@ -72,6 +74,13 @@ fn main() {
 
     let objects = vec![body, belly, head];
 
+    // Inicializar la luz
+    let light = Light::new(
+        Vec3::new(5.0, 5.0, 5.0),
+        Color::new(255, 255, 255),
+        1.0,
+    );
+
     // Bucle principal
     while window.is_open() && !window.is_key_down(Key::Escape) {
         // Procesar entrada del teclado para mover la cámara
@@ -103,7 +112,8 @@ fn main() {
                 let ray_direction = Vec3::new(screen_x, screen_y, -1.0).normalize();
                 let transformed_ray_direction = camera.basis_change(&ray_direction);
 
-                let color = cast_ray(&camera.eye, &transformed_ray_direction, &objects);
+                // Llamar a cast_ray con la luz como parámetro
+                let color = cast_ray(&camera.eye, &transformed_ray_direction, &objects, &light);
                 framebuffer.point(x as isize, y as isize, color);
             }
         }

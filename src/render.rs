@@ -1,4 +1,9 @@
-pub fn render(framebuffer: &mut Framebuffer, objects: &[Object]) {
+use crate::framebuffer::Framebuffer;
+use crate::light::Light;
+use crate::object::Object; // Asegúrate de que esto esté correctamente definido
+use crate::raytracer::cast_ray;
+
+pub fn render(framebuffer: &mut Framebuffer, objects: &[Object], light: &Light) {
     let width = framebuffer.width as f32;
     let height = framebuffer.height as f32;
     let aspect_ratio = width / height;
@@ -16,7 +21,7 @@ pub fn render(framebuffer: &mut Framebuffer, objects: &[Object]) {
             let ray_direction = normalize(&Vec3::new(screen_x, screen_y, -1.0));
 
             // Cast the ray and get the pixel color
-            let pixel_color = cast_ray(&Vec3::new(0.0, 0.0, 0.0), &ray_direction, objects);
+            let pixel_color = cast_ray(&Vec3::new(0.0, 0.0, 0.0), &ray_direction, objects, light);
 
             // Draw the pixel on screen with the returned color
             framebuffer.set_current_color(pixel_color);

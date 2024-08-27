@@ -56,6 +56,8 @@ impl Color {
             b: Color::clamp((self.b as f32 * scalar) as i32),
         }
     }
+
+    
 }
 
 // Implementar el trait Display para la estructura Color
@@ -65,3 +67,18 @@ impl fmt::Display for Color {
         write!(f, "Color(r: {}, g: {}, b: {})", self.r, self.g, self.b)
     }
 }
+
+use std::ops::Mul;
+
+impl Mul<f32> for Color {
+    type Output = Color;
+
+    fn mul(self, scalar: f32) -> Color {
+        Color {
+            r: Color::clamp((self.r as f32 * scalar) as i32),
+            g: Color::clamp((self.g as f32 * scalar) as i32),
+            b: Color::clamp((self.b as f32 * scalar) as i32),
+        }
+    }
+}
+
