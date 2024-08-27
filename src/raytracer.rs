@@ -28,7 +28,7 @@ pub fn cast_ray(ray_origin: &Vec3, ray_direction: &Vec3, objects: &[Sphere], lig
     let diffuse_intensity = dot(&light_dir, &intersect.normal).max(0.0) * light.intensity;
 
     // Modificar el color basado en la luz
-    let diffuse = intersect.material.diffuse * diffuse_intensity;
+    let diffuse = intersect.material.diffuse * diffuse_intensity * light.intensity;
 
     diffuse
 }
