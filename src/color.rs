@@ -1,3 +1,5 @@
+use std::ops::{Add, Mul};
+
 #[derive(Debug, Copy, Clone)]
 pub struct Color {
     pub r: u8,
@@ -56,8 +58,6 @@ impl Color {
             b: Color::clamp((self.b as f32 * scalar) as i32),
         }
     }
-
-    
 }
 
 // Implementar el trait Display para la estructura Color
@@ -68,7 +68,7 @@ impl fmt::Display for Color {
     }
 }
 
-use std::ops::Mul;
+// Implementación del operador Mul ya está aquí
 
 impl Mul<f32> for Color {
     type Output = Color;
@@ -82,3 +82,15 @@ impl Mul<f32> for Color {
     }
 }
 
+// Implementación del operador Add para Color
+impl Add for Color {
+    type Output = Color;
+
+    fn add(self, other: Color) -> Color {
+        Color {
+            r: Color::clamp(self.r as i32 + other.r as i32),
+            g: Color::clamp(self.g as i32 + other.g as i32),
+            b: Color::clamp(self.b as i32 + other.b as i32),
+        }
+    }
+}

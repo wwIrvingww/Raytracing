@@ -4,7 +4,25 @@ use crate::color::Color;
 #[derive(Debug, Clone, Copy)]
 pub struct Material {
     pub diffuse: Color,
+    pub specular: f32, // Coeficiente especular
 }
+
+impl Material {
+    pub fn new(diffuse: Color, specular: f32) -> Self {
+        Material {
+            diffuse,
+            specular,
+        }
+    }
+
+    pub fn black() -> Self {
+        Material {
+            diffuse: Color::new(0, 0, 0),
+            specular: 0.0,
+        }
+    }
+}
+
 
 #[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
@@ -35,10 +53,12 @@ impl Intersect {
             distance: 0.0,
             is_intersecting: false,
             material: Material {
-            diffuse: Color::new(0, 0, 0), // Color negro por defecto para no intersección
+                diffuse: Color::new(0, 0, 0), // Color negro por defecto para no intersección
+                specular: 0.0, // Valor especular por defecto
             },
         }
     }
+    
 }
 
 pub trait RayIntersect {
