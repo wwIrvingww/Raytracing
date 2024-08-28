@@ -41,19 +41,23 @@ fn main() {
 
     let sensitivity = 10.5;
 
+    // Materiales actualizados con albedo
     let black_material = Material {
         diffuse: Color::new(0, 0, 0),
         specular: 10.0,
+        albedo: [0.9, 0.1],  // 90% difuso, 10% especular
     };
 
     let white_material = Material {
         diffuse: Color::new(255, 255, 255),
         specular: 50.0,
+        albedo: [0.6, 0.3],  // 60% difuso, 30% especular
     };
 
     let orange_material = Material {
         diffuse: Color::new(255, 165, 0),
         specular: 25.0,
+        albedo: [0.8, 0.2],  // 80% difuso, 20% especular
     };
 
     // Crear más esferas para la escena

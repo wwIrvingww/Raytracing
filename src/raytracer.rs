@@ -30,12 +30,12 @@ pub fn cast_ray(ray_origin: &Vec3, ray_direction: &Vec3, objects: &[Sphere], lig
     let reflect_dir = reflect(&(-light_dir), &intersect.normal);
 
     // Calcular el factor de difusión
-    let diffuse_intensity = intersect.normal.dot(&light_dir).max(0.0);
-    let diffuse = intersect.material.diffuse * diffuse_intensity * light.intensity;
+    let diffuse_intensity = intersect.normal.dot(&light_dir).max(0.0).min(1.0);
+    let diffuse = intersect.material.diffuse * intersect.material.albedo[0] * diffuse_intensity * light.intensity;
 
     // Calcular el componente especular
     let specular_intensity = view_dir.dot(&reflect_dir).max(0.0).powf(intersect.material.specular);
-    let specular = light.color * specular_intensity * light.intensity;
+    let specular = light.color * intersect.material.albedo[1] * specular_intensity * light.intensity;
 
     // Sumar el componente difuso y especular
     diffuse + specular
